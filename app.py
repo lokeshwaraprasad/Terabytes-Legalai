@@ -11,10 +11,10 @@ import io
 import base64
 import uuid
 from datetime import datetime
-from dotenv import load_dotenv
 
 # Load environment variables (optional)
 try:
+    from dotenv import load_dotenv
     load_dotenv()
 except:
     pass  # Continue without .env file
@@ -38,74 +38,47 @@ SAMPLE_DOCUMENTS = {
     'tamil': """
     வணக்கம்! இது ஒரு சட்ட ஆவணம் ஆகும். இந்த ஆவணத்தில் பின்வரும் முக்கிய புள்ளிகள் உள்ளன:
 
-    1. கடனாளி மற்றும் கடன்தாரர் இடையேயான ஒப்பந்தம்
-    2. கடன் தொகை: ₹5,00,000 (ஐந்து லட்சம் ரூபாய்)
-    3. வட்டி விகிதம்: 12% ஆண்டுக்கு
-    4. திருப்பிச் செலுத்தும் காலம்: 24 மாதங்கள்
-    5. தாமத கட்டணம்: ₹500 மாதத்திற்கு
-    6. கடனாளி தினசரி ₹2000 செலுத்த வேண்டும்
-    7. ஒப்பந்தம் முறிவு நிலையில், முழு கடன் தொகையும் உடனடியாக திருப்பிச் செலுத்தப்பட வேண்டும்
-    8. சட்ட நடவடிக்கை எடுக்கப்படலாம்
+    1. சொத்து விவரங்கள்: இந்த ஆவணம் ஒரு நிலத்தைப் பற்றியது
+    2. விற்பனையாளர்: ராமன்
+    3. வாங்குபவர்: குமார்
+    4. விலை: ₹5,00,000
+    5. நிலம் அளவு: 2400 சதுர அடி
+    6. முகவரி: சென்னை, தமிழ்நாடு
+
+    இந்த ஆவணம் சட்டரீதியாக சரியானது மற்றும் பதிவு செய்யப்பட்டது.
     """,
     'english': """
-    LEGAL AGREEMENT FOR LOAN REPAYMENT
+    This is a legal document regarding property transfer. The key details are:
 
-    This document outlines the terms and conditions between the Borrower and Lender:
+    1. Property Details: Residential land
+    2. Seller: John Smith
+    3. Buyer: Jane Doe
+    4. Price: $50,000
+    5. Land Area: 2400 sq ft
+    6. Address: New York, USA
 
-    1. Loan Amount: ₹5,00,000 (Five Lakh Rupees)
-    2. Interest Rate: 12% per annum
-    3. Repayment Period: 24 months
-    4. Late Payment Fee: ₹500 per month
-    5. Daily Payment: ₹2000
-    6. Default Clause: In case of breach, full amount becomes immediately due
-    7. Legal Action: Lender reserves right to take legal action
-    8. Jurisdiction: Chennai High Court
-    """,
-    'land_document': """
-    பாகப் பிரிவினைப் பத்திரம் (PARTITION DEED)
-
-    இந்த ஆவணம் நாமக்கல் மாவட்டம், திருச்செங்கோடு வட்டம், கொக்கராயன் பேட்டை ரோடு, அனிமூர் போஸ்ட் பகுதியில் உள்ள நிலத்தைப் பிரித்துக்கொள்வதற்கான ஒப்பந்தம் ஆகும்.
-
-    முக்கிய புள்ளிகள்:
-    1. பங்காளிகள்: P. சுப்பிரமணியம், K. ஈஸ்வரமூர்த்தி, E. யசோதா
-    2. நில இடம்: நாமக்கல் மாவட்டம், திருச்செங்கோடு வட்டம்
-    3. முகவரி: கொக்கராயன் பேட்டை ரோடு, அனிமூர் போஸ்ட்
-    4. ஆவண எண்: 49420
-    5. பக்கம்: 5/20
-
-    சட்ட நடவடிக்கைகள்:
-    - இந்த ஆவணம் சட்டப்படி பதிவு செய்யப்பட்டுள்ளது
-    - அனைத்து பங்காளிகளும் இந்த ஒப்பந்தத்தை ஒப்புக்கொண்டுள்ளனர்
-    - நிலத்தின் பிரிவினை சட்டப்படி நடைபெறும்
-    - எந்தவொரு சர்ச்சையும் நீதிமன்றத்தில் தீர்வு காணப்படும்
-
-    குறிப்புகள்:
-    - P. தெய்வாணை இ.பெ.ரே
-    - N துளசியம்மாள் இ.பெ.ரே
+    This document is legally valid and registered.
     """
 }
 
 def extract_text_from_pdf(file_path):
-    """Extract text from PDF file with better chunking"""
+    """Extract text from PDF file with chunking for large documents"""
     try:
         with open(file_path, 'rb') as file:
             pdf_reader = PyPDF2.PdfReader(file)
             text = ""
-            page_texts = []
             
-            for page_num, page in enumerate(pdf_reader.pages):
-                page_text = page.extract_text()
-                if page_text.strip():
-                    page_texts.append(f"--- Page {page_num + 1} ---\n{page_text}\n")
-                    text += page_text + "\n"
+            for page_num in range(len(pdf_reader.pages)):
+                page = pdf_reader.pages[page_num]
+                text += page.extract_text() + "\n"
+                
+                # Add page break for better processing
+                if page_num < len(pdf_reader.pages) - 1:
+                    text += f"\n--- PAGE {page_num + 2} ---\n"
             
-            # If we have multiple pages, add page separators for better processing
-            if len(page_texts) > 1:
-                return "\n".join(page_texts)
-            else:
-                return text
+            return text
     except Exception as e:
-        return f"Error extracting PDF text: {str(e)}"
+        return f"Error extracting text from PDF: {str(e)}"
 
 def extract_text_from_docx(file_path):
     """Extract text from DOCX file"""
@@ -116,113 +89,25 @@ def extract_text_from_docx(file_path):
             text += paragraph.text + "\n"
         return text
     except Exception as e:
-        return f"Error extracting DOCX text: {str(e)}"
+        return f"Error extracting text from DOCX: {str(e)}"
 
 def extract_text_from_image(file_path):
     """Extract text from image using OCR"""
     try:
-        # Check if tesseract is available
+        # Check if Tesseract is available
         try:
             pytesseract.get_tesseract_version()
-        except Exception:
-            return "Error: Tesseract OCR is not installed. Please install Tesseract OCR to process images, or convert your image to PDF format."
+        except:
+            return "Tesseract OCR is not installed. Please convert your image to PDF or use manual text input."
         
         image = Image.open(file_path)
-        text = pytesseract.image_to_string(image, lang='tam+eng')  # Support both Tamil and English
-        return text if text.strip() else "No text could be extracted from the image. Please ensure the image is clear and contains readable text."
+        text = pytesseract.image_to_string(image, lang='eng+tam')
+        return text
     except Exception as e:
-        return f"Error extracting image text: {str(e)}"
-
-def process_document_with_gemini(document_text, language, document_id=None):
-    """Process document using Gemini AI with enhanced analysis"""
-    try:
-        # Check if document is too long and needs chunking
-        if len(document_text) > 10000:  # If document is very long
-            chunks = chunk_document(document_text)
-            return process_large_document(chunks, language)
-        
-        if language == 'tamil':
-            prompt = f"""
-            இந்த சட்ட ஆவணத்தை முழுமையாக பகுப்பாய்வு செய்து விரிவான, புரிந்துகொள்ளக்கூடிய சுருக்கத்தை தமிழ் மற்றும் ஆங்கிலத்தில் தரவும்.
-            
-            ஆவணம்:
-            {document_text}
-            
-            தயவுசெய்து பின்வரும் வடிவத்தில் விரிவான பதில் தரவும்:
-            
-            📋 ஆவண வகை (Document Type):
-            - இது என்ன வகையான சட்ட ஆவணம்?
-            
-            👥 பங்காளிகள் (Parties Involved):
-            - இந்த ஆவணத்தில் யார் யார் பங்கு வகிக்கிறார்கள்?
-            - அவர்களின் பெயர்கள் மற்றும் பாத்திரங்கள் என்ன?
-            
-            🏠 சொத்து விவரங்கள் (Property Details):
-            - சொத்து எங்கே உள்ளது?
-            - சொத்தின் வகை மற்றும் விவரங்கள் என்ன?
-            - சொத்து எண் அல்லது அடையாளங்கள் என்ன?
-            
-            📝 முக்கிய விதிமுறைகள் (Key Terms):
-            - இந்த ஆவணத்தின் முக்கிய விதிமுறைகள் என்ன?
-            - பணம், காலம், நிபந்தனைகள் பற்றி என்ன கூறப்பட்டுள்ளது?
-            
-            ⚖️ சட்ட நடவடிக்கைகள் (Legal Actions):
-            - சட்டப்படி என்ன நடவடிக்கைகள் எடுக்கப்படும்?
-            - சர்ச்சை நிலையில் என்ன செய்யப்படும்?
-            
-            ⚠️ அபாயங்கள் மற்றும் கவனிப்புகள் (Risks & Precautions):
-            - இந்த ஆவணத்தில் என்ன அபாயங்கள் உள்ளன?
-            - என்ன கவனிப்புகள் எடுக்க வேண்டும்?
-            
-            📋 எளிய சுருக்கம் (Simple Summary):
-            - இந்த ஆவணத்தின் முக்கிய செய்தி என்ன?
-            - இது ஏன் முக்கியமானது?
-            """
-        else:
-            prompt = f"""
-            Analyze this legal document comprehensively and provide a detailed, understandable summary in both English and Tamil.
-            
-            Document:
-            {document_text}
-            
-            Please provide a detailed response in this format:
-            
-            📋 Document Type:
-            - What type of legal document is this?
-            
-            👥 Parties Involved:
-            - Who are the parties involved in this document?
-            - What are their names and roles?
-            
-            🏠 Property Details:
-            - Where is the property located?
-            - What type of property and its details?
-            - What are the property numbers or identifiers?
-            
-            📝 Key Terms:
-            - What are the main terms and conditions?
-            - What is mentioned about money, time, conditions?
-            
-            ⚖️ Legal Actions:
-            - What legal actions will be taken?
-            - What happens in case of disputes?
-            
-            ⚠️ Risks and Precautions:
-            - What risks are involved in this document?
-            - What precautions should be taken?
-            
-            📋 Simple Summary:
-            - What is the main message of this document?
-            - Why is this important?
-            """
-        
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"Error processing document: {str(e)}"
+        return f"Error extracting text from image: {str(e)}"
 
 def chunk_document(document_text, chunk_size=8000):
-    """Split large document into smaller chunks for processing"""
+    """Split large documents into smaller chunks"""
     words = document_text.split()
     chunks = []
     
@@ -233,130 +118,133 @@ def chunk_document(document_text, chunk_size=8000):
     return chunks
 
 def process_large_document(chunks, language):
-    """Process large document by analyzing chunks and providing comprehensive summary"""
+    """Process document chunks and synthesize a comprehensive summary"""
     try:
-        summaries = []
+        chunk_summaries = []
         
         for i, chunk in enumerate(chunks):
-            if language == 'tamil':
-                prompt = f"""
-                இந்த சட்ட ஆவணத்தின் பகுதி {i+1} ஐ பகுப்பாய்வு செய்து முக்கிய புள்ளிகளை தமிழ் மற்றும் ஆங்கிலத்தில் தரவும்.
-                
-                ஆவண பகுதி:
-                {chunk}
-                
-                முக்கிய புள்ளிகள்:
-                1. பங்காளிகள்
-                2. சொத்து விவரங்கள்  
-                3. முக்கிய விதிமுறைகள்
-                4. சட்ட நடவடிக்கைகள்
-                """
-            else:
-                prompt = f"""
-                Analyze this part {i+1} of the legal document and provide key points in both English and Tamil.
-                
-                Document Part:
-                {chunk}
-                
-                Key Points:
-                1. Parties involved
-                2. Property details
-                3. Key terms
-                4. Legal actions
-                """
+            prompt = f"""
+            Analyze this legal document chunk {i+1} of {len(chunks)} and provide a detailed summary in {language}:
+            
+            {chunk}
+            
+            Please provide:
+            1. Document type and nature
+            2. Key parties involved
+            3. Important dates and amounts
+            4. Legal terms and conditions
+            5. Any risks or important notes
+            """
             
             response = model.generate_content(prompt)
-            summaries.append(f"--- Part {i+1} Analysis ---\n{response.text}\n")
+            chunk_summaries.append(response.text)
         
-        # Create final comprehensive summary
-        final_prompt = f"""
-        Based on these individual analyses of a legal document, provide a comprehensive summary in both English and Tamil:
+        # Synthesize all chunk summaries
+        synthesis_prompt = f"""
+        Combine these {len(chunk_summaries)} summaries of a legal document into one comprehensive analysis in {language}:
         
-        {chr(10).join(summaries)}
+        {chr(10).join([f"Summary {i+1}: {summary}" for i, summary in enumerate(chunk_summaries)])}
         
-        Please provide:
-        1. Complete document overview
-        2. All parties involved
-        3. Complete property details
-        4. All key terms and conditions
-        5. Legal implications and risks
-        6. Simple explanation for common people
+        Provide a final comprehensive summary with:
+        1. Document Type and Purpose
+        2. All Parties Involved
+        3. Property/Asset Details
+        4. Key Terms and Conditions
+        5. Important Dates and Financial Details
+        6. Legal Risks and Precautions
+        7. Simple Summary for non-legal understanding
         """
         
-        final_response = model.generate_content(final_prompt)
+        final_response = model.generate_content(synthesis_prompt)
         return final_response.text
         
     except Exception as e:
         return f"Error processing large document: {str(e)}"
 
-def answer_question_with_gemini(question, document_text, language):
-    """Answer questions about the document using Gemini AI with enhanced context"""
+def process_document_with_gemini(document_text, language, document_id=None):
+    """Process document with Gemini AI for comprehensive analysis"""
     try:
-        if language == 'tamil':
-            prompt = f"""
-            இந்த கேள்விக்கு ஆவணத்தின் அடிப்படையில் விரிவான, துல்லியமான பதில் தரவும்:
-            
-            கேள்வி: {question}
-            
-            ஆவணம்:
-            {document_text}
-            
-            தயவுசெய்து பின்வரும் வடிவத்தில் பதில் தரவும்:
-            
-            📝 நேரடி பதில் (Direct Answer):
-            - கேள்விக்கு நேரடியான பதில்
-            
-            📋 ஆவணத்தில் இருந்து ஆதாரம் (Evidence from Document):
-            - ஆவணத்தில் இருந்து தொடர்புடைய பகுதிகள்
-            - குறிப்புகள் மற்றும் எண்கள்
-            
-            🔍 விளக்கம் (Explanation):
-            - பதிலின் விளக்கம்
-            - சட்ட அர்த்தம்
-            
-            ⚠️ கவனிப்புகள் (Important Notes):
-            - முக்கியமான கவனிப்புகள்
-            - சட்ட அறிவுரைகள்
-            
-            தமிழ் மற்றும் ஆங்கிலத்தில் பதில் தரவும்.
-            """
-        else:
-            prompt = f"""
-            Answer this question based on the document with detailed, accurate information:
-            
-            Question: {question}
-            
-            Document:
-            {document_text}
-            
-            Please provide your answer in this format:
-            
-            📝 Direct Answer:
-            - Direct response to the question
-            
-            📋 Evidence from Document:
-            - Relevant parts from the document
-            - Specific references and numbers
-            
-            🔍 Explanation:
-            - Explanation of the answer
-            - Legal implications
-            
-            ⚠️ Important Notes:
-            - Important considerations
-            - Legal advice
-            
-            Provide the answer in both English and Tamil.
-            """
+        # Check if document is too large and needs chunking
+        if len(document_text) > 10000:  # If document is very large
+            chunks = chunk_document(document_text)
+            return process_large_document(chunks, language)
+        
+        prompt = f"""
+        Analyze this legal document and provide a comprehensive summary in {language}. 
+        Please structure your response with clear sections:
+
+        Document Text:
+        {document_text}
+
+        Please provide:
+        1. **Document Type**: What type of legal document is this?
+        2. **Parties Involved**: Who are the main parties in this document?
+        3. **Property/Asset Details**: What property or assets are being discussed?
+        4. **Key Terms**: What are the important terms and conditions?
+        5. **Legal Actions**: What legal actions or agreements are mentioned?
+        6. **Risks & Precautions**: What risks or important precautions should be noted?
+        7. **Simple Summary**: A simple, easy-to-understand summary for non-legal professionals
+
+        Make sure to highlight any important dates, amounts, or legal obligations.
+        """
         
         response = model.generate_content(prompt)
         return response.text
+        
+    except Exception as e:
+        return f"Error processing document with AI: {str(e)}"
+
+def answer_question_with_gemini(question, document_text, language):
+    """Answer questions about the document using Gemini AI"""
+    try:
+        prompt = f"""
+        Based on the following legal document, answer this question in {language}:
+        
+        Question: {question}
+        
+        Document Text:
+        {document_text}
+        
+        Please provide:
+        1. **Direct Answer**: A clear, direct answer to the question
+        2. **Evidence**: Specific quotes or references from the document that support your answer
+        3. **Explanation**: Why this answer is correct based on the document
+        4. **Important Notes**: Any additional important information related to the question
+        
+        If the question cannot be answered from the document, please say so clearly.
+        """
+        
+        response = model.generate_content(prompt)
+        return response.text
+        
     except Exception as e:
         return f"Error answering question: {str(e)}"
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/process', methods=['POST'])
+def process_document():
+    try:
+        data = request.get_json()
+        document_text = data.get('document_text', '')
+        language = data.get('language', 'English')
+        
+        if not document_text.strip():
+            return jsonify({'error': 'Please provide document text'}), 400
+        
+        # Process with Gemini AI
+        result = process_document_with_gemini(document_text, language)
+        
+        return jsonify({
+            'success': True,
+            'result': result,
+            'language': language
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Error processing document: {str(e)}'}), 500
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -365,82 +253,59 @@ def upload_file():
             return jsonify({'error': 'No file provided'}), 400
         
         file = request.files['file']
-        language = request.form.get('language', 'english')
-        
         if file.filename == '':
             return jsonify({'error': 'No file selected'}), 400
         
-        if file:
-            filename = secure_filename(file.filename)
-            file_id = str(uuid.uuid4())
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_{filename}")
-            file.save(file_path)
-            
-            # Extract text based on file type
-            file_extension = filename.lower().split('.')[-1]
-            document_text = ""
-            
-            if file_extension == 'pdf':
-                document_text = extract_text_from_pdf(file_path)
-            elif file_extension in ['docx', 'doc']:
-                document_text = extract_text_from_docx(file_path)
-            elif file_extension in ['png', 'jpg', 'jpeg', 'gif', 'bmp']:
-                document_text = extract_text_from_image(file_path)
-                if document_text.startswith("Error: Tesseract OCR is not installed"):
-                    return jsonify({
-                        'error': 'Image processing requires Tesseract OCR. Please convert your image to PDF format or install Tesseract OCR. For now, you can use the "Paste Text" tab to manually enter the text from your image.',
-                        'suggestion': 'Convert image to PDF or use manual text input'
-                    }), 400
-            else:
-                return jsonify({'error': 'Unsupported file type'}), 400
-            
-            if document_text.startswith("Error"):
-                return jsonify({'error': document_text}), 400
-            
-            # Store document
-            DOCUMENTS_STORAGE[file_id] = {
-                'filename': filename,
-                'text': document_text,
-                'language': language,
-                'upload_time': datetime.now().isoformat(),
-                'file_path': file_path
-            }
-            
-            # Process with Gemini AI
-            result = process_document_with_gemini(document_text, language, file_id)
-            
-            return jsonify({
-                'success': True,
-                'summary': result,
-                'language': language,
-                'document_id': file_id,
-                'filename': filename
-            })
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/process', methods=['POST'])
-def process_document():
-    try:
-        data = request.get_json()
-        document_text = data.get('document_text', '')
-        language = data.get('language', 'english')
+        # Get language preference
+        language = request.form.get('language', 'English')
         
-        if not document_text:
-            return jsonify({'error': 'No document text provided'}), 400
+        # Save file temporarily
+        filename = secure_filename(file.filename)
+        file_path = f"temp_{uuid.uuid4()}_{filename}"
+        file.save(file_path)
+        
+        # Extract text based on file type
+        file_extension = filename.lower().split('.')[-1]
+        
+        if file_extension == 'pdf':
+            document_text = extract_text_from_pdf(file_path)
+        elif file_extension in ['doc', 'docx']:
+            document_text = extract_text_from_docx(file_path)
+        elif file_extension in ['jpg', 'jpeg', 'png', 'gif', 'bmp']:
+            document_text = extract_text_from_image(file_path)
+        else:
+            return jsonify({'error': 'Unsupported file type'}), 400
+        
+        # Clean up temporary file
+        try:
+            os.remove(file_path)
+        except:
+            pass
+        
+        if not document_text.strip():
+            return jsonify({'error': 'Could not extract text from file'}), 400
+        
+        # Store document for Q&A
+        document_id = str(uuid.uuid4())
+        DOCUMENTS_STORAGE[document_id] = {
+            'text': document_text,
+            'filename': filename,
+            'uploaded_at': datetime.now().isoformat()
+        }
         
         # Process with Gemini AI
-        result = process_document_with_gemini(document_text, language)
+        result = process_document_with_gemini(document_text, language, document_id)
         
         return jsonify({
             'success': True,
-            'summary': result,
+            'result': result,
+            'document_id': document_id,
+            'filename': filename,
             'language': language
         })
-    
+        
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f'Error processing file: {str(e)}'}), 500
 
 @app.route('/ask', methods=['POST'])
 def ask_question():
@@ -448,22 +313,15 @@ def ask_question():
         data = request.get_json()
         question = data.get('question', '')
         document_id = data.get('document_id', '')
-        language = data.get('language', 'english')
+        language = data.get('language', 'English')
         
-        if not question:
-            return jsonify({'error': 'No question provided'}), 400
+        if not question.strip():
+            return jsonify({'error': 'Please provide a question'}), 400
         
-        document_text = None
+        if not document_id or document_id not in DOCUMENTS_STORAGE:
+            return jsonify({'error': 'Document not found. Please upload a document first.'}), 400
         
-        # Check if document_id is provided and exists in storage
-        if document_id and document_id in DOCUMENTS_STORAGE:
-            document_text = DOCUMENTS_STORAGE[document_id]['text']
-        else:
-            # If no document_id, try to get from session or return error
-            return jsonify({'error': 'No document available. Please upload a document first.'}), 400
-        
-        if not document_text:
-            return jsonify({'error': 'Document text not found'}), 400
+        document_text = DOCUMENTS_STORAGE[document_id]['text']
         
         # Answer question with Gemini AI
         answer = answer_question_with_gemini(question, document_text, language)
@@ -473,24 +331,20 @@ def ask_question():
             'answer': answer,
             'language': language
         })
-    
+        
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f'Error answering question: {str(e)}'}), 500
 
 @app.route('/ask_text', methods=['POST'])
 def ask_question_text():
-    """Ask questions about text documents (not uploaded files)"""
     try:
         data = request.get_json()
         question = data.get('question', '')
         document_text = data.get('document_text', '')
-        language = data.get('language', 'english')
+        language = data.get('language', 'English')
         
-        if not question:
-            return jsonify({'error': 'No question provided'}), 400
-        
-        if not document_text:
-            return jsonify({'error': 'No document text provided'}), 400
+        if not question.strip() or not document_text.strip():
+            return jsonify({'error': 'Please provide both question and document text'}), 400
         
         # Answer question with Gemini AI
         answer = answer_question_with_gemini(question, document_text, language)
@@ -500,9 +354,9 @@ def ask_question_text():
             'answer': answer,
             'language': language
         })
-    
+        
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f'Error answering question: {str(e)}'}), 500
 
 @app.route('/documents', methods=['GET'])
 def get_documents():
@@ -513,37 +367,33 @@ def get_documents():
             documents.append({
                 'id': doc_id,
                 'filename': doc_data['filename'],
-                'language': doc_data['language'],
-                'upload_time': doc_data['upload_time']
+                'uploaded_at': doc_data['uploaded_at']
             })
         
         return jsonify({
             'success': True,
             'documents': documents
         })
-    
+        
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f'Error getting documents: {str(e)}'}), 500
 
 @app.route('/sample/<language>')
 def get_sample_document(language):
-    if language in SAMPLE_DOCUMENTS:
-        return jsonify({
-            'success': True,
-            'document': SAMPLE_DOCUMENTS[language],
-            'language': language
-        })
-    else:
-        return jsonify({'error': 'Language not supported'}), 400
+    """Get sample document in specified language"""
+    try:
+        if language.lower() in SAMPLE_DOCUMENTS:
+            return jsonify({
+                'success': True,
+                'text': SAMPLE_DOCUMENTS[language.lower()],
+                'language': language
+            })
+        else:
+            return jsonify({'error': 'Language not supported'}), 400
+            
+    except Exception as e:
+        return jsonify({'error': f'Error getting sample document: {str(e)}'}), 500
 
-@app.route('/sample/land')
-def get_land_document_sample():
-    return jsonify({
-        'success': True,
-        'document': SAMPLE_DOCUMENTS['land_document'],
-        'language': 'tamil'
-    })
-
+# For Vercel deployment
 if __name__ == '__main__':
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)
