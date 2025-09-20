@@ -33,57 +33,113 @@ except Exception as e:
 # Sample legal documents
 SAMPLE_DOCUMENTS = {
     'tamil': """
-    வணக்கம்! இது ஒரு சட்ட ஆவணம் ஆகும். இந்த ஆவணத்தில் பின்வரும் முக்கிய புள்ளிகள் உள்ளன:
+    சொத்து விற்பனை ஒப்பந்தம் / PROPERTY SALE AGREEMENT
 
-    1. சொத்து விவரங்கள்: இந்த ஆவணம் ஒரு நிலத்தைப் பற்றியது
-    2. விற்பனையாளர்: ராமன்
-    3. வாங்குபவர்: குமார்
-    4. விலை: ₹5,00,000
-    5. நிலம் அளவு: 2400 சதுர அடி
-    6. முகவரி: சென்னை, தமிழ்நாடு
+    விற்பனையாளர்: ராமன் (Ram Kumar)
+    வாங்குபவர்: குமார் (Kumar Rajan)
+    சொத்து விலை: ₹5,00,000 (ஐந்து லட்சம் ரூபாய்)
+    நிலம் அளவு: 2400 சதுர அடி
+    முகவரி: சென்னை, தமிழ்நாடு, இந்தியா
+    தேதி: 15-09-2024
 
-    இந்த ஆவணம் சட்டரீதியாக சரியானது மற்றும் பதிவு செய்யப்பட்டது.
+    முக்கிய விதிகள்:
+    1. வாங்குபவர் 30 நாட்களுக்குள் முழு தொகையையும் செலுத்த வேண்டும்
+    2. சொத்து பதிவு 60 நாட்களுக்குள் முடிக்கப்பட வேண்டும்
+    3. விற்பனையாளர் சொத்து சுத்தமான தலைப்பை வழங்க வேண்டும்
+    4. எந்தவொரு கட்டணமும் வாங்குபவர் பொறுப்பில்
+
+    எச்சரிக்கைகள்:
+    - சொத்து மீது எந்தவொரு கடனும் இல்லை என்பதை உறுதிப்படுத்தவும்
+    - சட்டரீதியான ஆவணங்களை சரிபார்க்கவும்
+    - பதிவு கட்டணங்களை கணக்கில் எடுத்துக்கொள்ளவும்
     """,
     'english': """
-    This is a legal document regarding property transfer. The key details are:
+    PROPERTY SALE AGREEMENT
 
-    1. Property Details: Residential land
-    2. Seller: John Smith
-    3. Buyer: Jane Doe
-    4. Price: $50,000
-    5. Land Area: 2400 sq ft
-    6. Address: New York, USA
+    Seller: John Smith
+    Buyer: Jane Doe
+    Property Price: $50,000 (Fifty Thousand Dollars)
+    Land Area: 2400 sq ft
+    Address: 123 Main Street, New York, USA
+    Date: September 15, 2024
 
-    This document is legally valid and registered.
+    Key Terms and Conditions:
+    1. Buyer must pay full amount within 30 days
+    2. Property registration must be completed within 60 days
+    3. Seller must provide clear title to the property
+    4. All registration fees are buyer's responsibility
+
+    Legal Clauses:
+    - Property must be free from any encumbrances
+    - Seller warrants clear ownership
+    - Buyer responsible for due diligence
+    - Dispute resolution through arbitration
+
+    Red Alerts - Critical Risks:
+    - Verify no outstanding loans on property
+    - Check all legal documents thoroughly
+    - Consider registration costs and taxes
+    - Ensure property boundaries are clear
+    - Verify seller's legal capacity to sell
+
+    Important Deadlines:
+    - Payment due: October 15, 2024
+    - Registration deadline: November 15, 2024
+    - Possession date: December 1, 2024
     """
 }
 
 def process_document_with_gemini(document_text, language):
-    """Process document with Gemini AI for comprehensive analysis"""
+    """Process document with Gemini AI for comprehensive bilingual analysis"""
     try:
         if model is None:
             return "❌ AI model is not available. Please check the API key configuration."
         
         prompt = f"""
-        Analyze this legal document and provide a comprehensive summary in {language}. 
+        Analyze this legal document and provide a comprehensive analysis in BOTH English and Tamil. 
         Please structure your response with clear sections:
 
         Document Text:
         {document_text}
 
-        Please provide:
-        1. **Document Type**: What type of legal document is this?
-        2. **Parties Involved**: Who are the main parties in this document?
-        3. **Property/Asset Details**: What property or assets are being discussed?
-        4. **Key Terms**: What are the important terms and conditions?
-        5. **Legal Actions**: What legal actions or agreements are mentioned?
-        6. **Risks & Precautions**: What risks or important precautions should be noted?
-        7. **Simple Summary**: A simple, easy-to-understand summary for non-legal professionals
+        Please provide the following sections:
 
-        Make sure to highlight any important dates, amounts, or legal obligations.
+        ## 📋 **DOCUMENT OVERVIEW / ஆவண கண்ணோட்டம்**
+        **English**: What type of legal document is this? Brief overview.
+        **Tamil**: இது என்ன வகையான சட்ட ஆவணம்? சுருக்கமான கண்ணோட்டம்.
+
+        ## 👥 **PARTIES INVOLVED / பங்கேற்பாளர்கள்**
+        **English**: Who are the main parties in this document?
+        **Tamil**: இந்த ஆவணத்தில் முக்கிய பங்கேற்பாளர்கள் யார்?
+
+        ## 🏠 **PROPERTY/ASSET DETAILS / சொத்து விவரங்கள்**
+        **English**: What property or assets are being discussed?
+        **Tamil**: எந்த சொத்து அல்லது சொத்துக்கள் பற்றி விவாதிக்கப்படுகிறது?
+
+        ## 📜 **KEY LEGAL CLAUSES / முக்கிய சட்ட விதிகள்**
+        **English**: Important legal clauses and their implications.
+        **Tamil**: முக்கியமான சட்ட விதிகள் மற்றும் அவற்றின் விளைவுகள்.
+
+        ## ⚠️ **RED ALERTS - CRITICAL RISKS / சிவப்பு எச்சரிக்கைகள் - முக்கியமான அபாயங்கள்**
+        **English**: Critical risks, warnings, and things to be careful about.
+        **Tamil**: முக்கியமான அபாயங்கள், எச்சரிக்கைகள் மற்றும் கவனமாக இருக்க வேண்டிய விஷயங்கள்.
+
+        ## 📅 **IMPORTANT DATES & AMOUNTS / முக்கியமான தேதிகள் மற்றும் தொகைகள்**
+        **English**: Key dates, deadlines, and financial amounts.
+        **Tamil**: முக்கியமான தேதிகள், காலக்கெடுக்கள் மற்றும் நிதி தொகைகள்.
+
+        ## 📝 **SIMPLE SUMMARY / எளிய சுருக்கம்**
+        **English**: Easy-to-understand summary for non-legal professionals.
+        **Tamil**: சட்ட நிபுணர்கள் அல்லாதவர்களுக்கு புரிந்துகொள்ள எளிதான சுருக்கம்.
+
+        ## 💡 **RECOMMENDATIONS / பரிந்துரைகள்**
+        **English**: What should the parties do next?
+        **Tamil**: பங்கேற்பாளர்கள் அடுத்து என்ன செய்ய வேண்டும்?
+
+        Make sure to highlight any critical legal obligations, deadlines, or financial risks in both languages.
         """
         
-        print(f"🤖 Processing document with AI (Language: {language})")
+        print(f"🤖 Processing document with comprehensive bilingual analysis")
         response = model.generate_content(prompt)
         print("✅ AI response received successfully")
         return response.text
@@ -93,29 +149,41 @@ def process_document_with_gemini(document_text, language):
         return f"❌ Error processing document with AI: {str(e)}"
 
 def answer_question_with_gemini(question, document_text, language):
-    """Answer questions about the document using Gemini AI"""
+    """Answer questions about the document using Gemini AI with bilingual support"""
     try:
         if model is None:
             return "❌ AI model is not available. Please check the API key configuration."
         
         prompt = f"""
-        Based on the following legal document, answer this question in {language}:
+        Based on the following legal document, answer this question in BOTH English and Tamil:
         
         Question: {question}
         
         Document Text:
         {document_text}
         
-        Please provide:
-        1. **Direct Answer**: A clear, direct answer to the question
-        2. **Evidence**: Specific quotes or references from the document that support your answer
-        3. **Explanation**: Why this answer is correct based on the document
-        4. **Important Notes**: Any additional important information related to the question
-        
-        If the question cannot be answered from the document, please say so clearly.
+        Please provide your answer in this format:
+
+        ## 🎯 **DIRECT ANSWER / நேரடி பதில்**
+        **English**: [Clear, direct answer to the question]
+        **Tamil**: [தமிழில் தெளிவான, நேரடி பதில்]
+
+        ## 📄 **EVIDENCE FROM DOCUMENT / ஆவணத்திலிருந்து சான்று**
+        **English**: [Specific quotes or references from the document]
+        **Tamil**: [ஆவணத்திலிருந்து குறிப்பிட்ட மேற்கோள்கள் அல்லது குறிப்புகள்]
+
+        ## 💡 **EXPLANATION / விளக்கம்**
+        **English**: [Why this answer is correct based on the document]
+        **Tamil**: [ஆவணத்தின் அடிப்படையில் இந்த பதில் ஏன் சரியானது]
+
+        ## ⚠️ **IMPORTANT NOTES / முக்கியமான குறிப்புகள்**
+        **English**: [Any additional important information related to the question]
+        **Tamil**: [கேள்வியுடன் தொடர்புடைய கூடுதல் முக்கியமான தகவல்கள்]
+
+        If the question cannot be answered from the document, please say so clearly in both languages.
         """
         
-        print(f"🤖 Answering question with AI (Language: {language})")
+        print(f"🤖 Answering question with bilingual AI response")
         response = model.generate_content(prompt)
         print("✅ AI Q&A response received successfully")
         return response.text
