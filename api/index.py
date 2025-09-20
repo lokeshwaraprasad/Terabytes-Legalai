@@ -394,9 +394,6 @@ def get_sample_document(language):
     except Exception as e:
         return jsonify({'error': f'Error getting sample document: {str(e)}'}), 500
 
-# Vercel handler
-def handler(request):
-    return app(request.environ, lambda *args: None)
-
+# For Vercel deployment
 if __name__ == '__main__':
     app.run(debug=True)
