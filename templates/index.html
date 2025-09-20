@@ -1412,9 +1412,9 @@
 
                 if (data.success) {
                     currentDocumentId = data.document_id;
-                    currentDocumentText = data.summary;
+                    currentDocumentText = data.result; // Changed from data.summary to data.result
                     showDocumentInfo(data.filename, data.language);
-                    showResult(data.summary);
+                    showResult(data.result); // Changed from data.summary to data.result
                     showQASection();
                 } else {
                     showError(data.error || 'Failed to upload file');
@@ -1504,13 +1504,16 @@
                 });
 
                 const data = await response.json();
+                console.log('AI Analysis Response:', data); // Debug log
 
                 if (data.success) {
                     currentDocumentId = null; // No document ID for text input
                     currentDocumentText = documentText;
-                    showResult(data.summary);
+                    console.log('Showing result:', data.result); // Debug log
+                    showResult(data.result); // Changed from data.summary to data.result
                     hideQASection(); // Hide Q&A for text input
                 } else {
+                    console.error('AI Analysis Error:', data.error); // Debug log
                     showError(data.error || 'Failed to process document');
                 }
             } catch (error) {
@@ -1576,9 +1579,15 @@
         }
 
         function showResult(content) {
+            console.log('showResult called with:', content); // Debug log
             const resultDiv = document.getElementById('resultContent');
-            resultDiv.textContent = content;
-            resultDiv.style.display = 'block';
+            if (resultDiv) {
+                resultDiv.textContent = content;
+                resultDiv.style.display = 'block';
+                console.log('Result displayed successfully'); // Debug log
+            } else {
+                console.error('resultContent element not found'); // Debug log
+            }
         }
 
         function hideResult() {
