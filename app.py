@@ -29,6 +29,7 @@ DOCUMENTS_STORAGE = {}
 
 # Configure Gemini API
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyAxWFW3wCpdpbiis5djEONz_p5vaIY4LzQ')
+print(f"Using API Key: {GEMINI_API_KEY[:10]}...")
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
