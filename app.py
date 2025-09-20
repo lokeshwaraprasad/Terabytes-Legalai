@@ -13,8 +13,11 @@ import uuid
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables (optional)
+try:
+    load_dotenv()
+except:
+    pass  # Continue without .env file
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
