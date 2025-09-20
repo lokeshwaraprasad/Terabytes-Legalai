@@ -98,13 +98,13 @@ def extract_text_from_image(file_path):
         try:
             pytesseract.get_tesseract_version()
         except:
-            return "Tesseract OCR is not installed. Please convert your image to PDF or use manual text input."
+            return "Tesseract OCR is not available in this deployment environment. Please convert your image to PDF or use manual text input for better results."
         
         image = Image.open(file_path)
         text = pytesseract.image_to_string(image, lang='eng+tam')
         return text
     except Exception as e:
-        return f"Error extracting text from image: {str(e)}"
+        return "Tesseract OCR is not available in this deployment environment. Please convert your image to PDF or use manual text input for better results."
 
 def chunk_document(document_text, chunk_size=8000):
     """Split large documents into smaller chunks"""
@@ -169,13 +169,13 @@ def process_document_with_gemini(document_text, language, document_id=None):
             chunks = chunk_document(document_text)
             return process_large_document(chunks, language)
         
-        prompt = f"""
+            prompt = f"""
         Analyze this legal document and provide a comprehensive summary in {language}. 
         Please structure your response with clear sections:
-
+            
         Document Text:
-        {document_text}
-
+            {document_text}
+            
         Please provide:
         1. **Document Type**: What type of legal document is this?
         2. **Parties Involved**: Who are the main parties in this document?
@@ -197,14 +197,14 @@ def process_document_with_gemini(document_text, language, document_id=None):
 def answer_question_with_gemini(question, document_text, language):
     """Answer questions about the document using Gemini AI"""
     try:
-        prompt = f"""
+            prompt = f"""
         Based on the following legal document, answer this question in {language}:
         
         Question: {question}
-        
+            
         Document Text:
-        {document_text}
-        
+            {document_text}
+            
         Please provide:
         1. **Direct Answer**: A clear, direct answer to the question
         2. **Evidence**: Specific quotes or references from the document that support your answer
@@ -212,7 +212,7 @@ def answer_question_with_gemini(question, document_text, language):
         4. **Important Notes**: Any additional important information related to the question
         
         If the question cannot be answered from the document, please say so clearly.
-        """
+            """
         
         response = model.generate_content(prompt)
         return response.text
@@ -354,7 +354,7 @@ def ask_question_text():
             'answer': answer,
             'language': language
         })
-        
+    
     except Exception as e:
         return jsonify({'error': f'Error answering question: {str(e)}'}), 500
 
@@ -383,14 +383,14 @@ def get_sample_document(language):
     """Get sample document in specified language"""
     try:
         if language.lower() in SAMPLE_DOCUMENTS:
-            return jsonify({
-                'success': True,
+        return jsonify({
+            'success': True,
                 'text': SAMPLE_DOCUMENTS[language.lower()],
-                'language': language
-            })
-        else:
-            return jsonify({'error': 'Language not supported'}), 400
-            
+            'language': language
+        })
+    else:
+        return jsonify({'error': 'Language not supported'}), 400
+
     except Exception as e:
         return jsonify({'error': f'Error getting sample document: {str(e)}'}), 500
 

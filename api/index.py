@@ -98,13 +98,13 @@ def extract_text_from_image(file_path):
         try:
             pytesseract.get_tesseract_version()
         except:
-            return "Tesseract OCR is not installed. Please convert your image to PDF or use manual text input."
+            return "Tesseract OCR is not available in this deployment environment. Please convert your image to PDF or use manual text input for better results."
         
         image = Image.open(file_path)
         text = pytesseract.image_to_string(image, lang='eng+tam')
         return text
     except Exception as e:
-        return f"Error extracting text from image: {str(e)}"
+        return "Tesseract OCR is not available in this deployment environment. Please convert your image to PDF or use manual text input for better results."
 
 def chunk_document(document_text, chunk_size=8000):
     """Split large documents into smaller chunks"""
