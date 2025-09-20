@@ -25,12 +25,7 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-this-in-p
 DOCUMENTS_STORAGE = {}
 
 # Configure Gemini API
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-if not GEMINI_API_KEY:
-    print("ERROR: GEMINI_API_KEY environment variable not found!")
-    print("Please set GEMINI_API_KEY in your environment variables.")
-    exit(1)
-
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyAxWFW3wCpdpbiis5djEONz_p5vaIY4LzQ')
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
