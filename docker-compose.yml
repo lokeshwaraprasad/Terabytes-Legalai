@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  legal-ai:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+    volumes:
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+
