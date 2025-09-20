@@ -528,6 +528,26 @@
             max-height: 500px;
             overflow-y: auto;
             font-size: 1rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .result-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .result-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .result-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+
+        .result-content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
         }
 
         .qa-section {
@@ -1195,16 +1215,16 @@
                             <p>Drag & drop your file here or click to browse</p>
                             <small>Supports PDF, DOCX, PNG, JPG files (Max 16MB)</small>
                             <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.gif,.bmp">
-                        </div>
                     </div>
+                </div>
 
-                    <div class="sample-buttons">
-                        <button class="sample-btn" onclick="loadSample('english')">
-                            <i class="fas fa-file-text"></i> Load English Sample
-                        </button>
-                        <button class="sample-btn" onclick="loadSample('tamil')">
-                            <i class="fas fa-file-text"></i> Load Tamil Sample
-                        </button>
+                <div class="sample-buttons">
+                    <button class="sample-btn" onclick="loadSample('english')">
+                        <i class="fas fa-file-text"></i> Load English Sample
+                    </button>
+                    <button class="sample-btn" onclick="loadSample('tamil')">
+                        <i class="fas fa-file-text"></i> Load Tamil Sample
+                    </button>
                         <button class="sample-btn" onclick="loadLandDocumentSample()">
                             <i class="fas fa-file-contract"></i> Load Land Document Sample
                         </button>
@@ -1212,7 +1232,7 @@
                 </div>
 
                 <div class="tab-content" id="text-tab">
-                    <div class="textarea-container">
+                <div class="textarea-container">
                         <textarea id="documentText" placeholder="Paste your legal document text here..."></textarea>
                     </div>
                 </div>
@@ -1270,7 +1290,7 @@
                     <button class="back-btn" onclick="showMainSection()">
                         <i class="fas fa-arrow-left"></i> Back to Analysis
                     </button>
-                </div>
+    </div>
                 
                 <div class="qa-info" id="qaInfo" style="display: none;">
                     <div class="document-info">
