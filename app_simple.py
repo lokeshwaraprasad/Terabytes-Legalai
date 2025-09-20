@@ -21,8 +21,14 @@ DOCUMENTS_STORAGE = {}
 # Configure Gemini API
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyAxWFW3wCpdpbiis5djEONz_p5vaIY4LzQ')
 print(f"Using API Key: {GEMINI_API_KEY[:10]}...")
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+
+try:
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    print("✅ Gemini AI model initialized successfully")
+except Exception as e:
+    print(f"❌ Error initializing Gemini AI: {e}")
+    model = None
 
 # Sample legal documents
 SAMPLE_DOCUMENTS = {
@@ -55,6 +61,9 @@ SAMPLE_DOCUMENTS = {
 def process_document_with_gemini(document_text, language):
     """Process document with Gemini AI for comprehensive analysis"""
     try:
+        if model is None:
+            return "❌ AI model is not available. Please check the API key configuration."
+        
         prompt = f"""
         Analyze this legal document and provide a comprehensive summary in {language}. 
         Please structure your response with clear sections:
@@ -74,15 +83,21 @@ def process_document_with_gemini(document_text, language):
         Make sure to highlight any important dates, amounts, or legal obligations.
         """
         
+        print(f"🤖 Processing document with AI (Language: {language})")
         response = model.generate_content(prompt)
+        print("✅ AI response received successfully")
         return response.text
         
     except Exception as e:
-        return f"Error processing document with AI: {str(e)}"
+        print(f"❌ AI Error: {str(e)}")
+        return f"❌ Error processing document with AI: {str(e)}"
 
 def answer_question_with_gemini(question, document_text, language):
     """Answer questions about the document using Gemini AI"""
     try:
+        if model is None:
+            return "❌ AI model is not available. Please check the API key configuration."
+        
         prompt = f"""
         Based on the following legal document, answer this question in {language}:
         
@@ -100,11 +115,14 @@ def answer_question_with_gemini(question, document_text, language):
         If the question cannot be answered from the document, please say so clearly.
         """
         
+        print(f"🤖 Answering question with AI (Language: {language})")
         response = model.generate_content(prompt)
+        print("✅ AI Q&A response received successfully")
         return response.text
         
     except Exception as e:
-        return f"Error answering question: {str(e)}"
+        print(f"❌ AI Q&A Error: {str(e)}")
+        return f"❌ Error answering question: {str(e)}"
 
 @app.route('/')
 def index():
@@ -177,8 +195,32 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'message': 'Terabytes Legal AI is running!',
-        'timestamp': datetime.now().isoformat()
+        'timestamp': datetime.now().isoformat(),
+        'ai_model_status': 'available' if model is not None else 'unavailable',
+        'sample_documents': list(SAMPLE_DOCUMENTS.keys())
     })
+
+@app.route('/debug')
+def debug_info():
+    """Debug endpoint to check AI and sample documents"""
+    try:
+        # Test AI with a simple prompt
+        ai_test_result = "❌ AI not working"
+        if model is not None:
+            try:
+                test_response = model.generate_content("Say 'AI is working' in one word")
+                ai_test_result = f"✅ AI working: {test_response.text}"
+            except Exception as e:
+                ai_test_result = f"❌ AI error: {str(e)}"
+        
+        return jsonify({
+            'ai_status': ai_test_result,
+            'sample_documents': SAMPLE_DOCUMENTS,
+            'api_key_configured': bool(GEMINI_API_KEY),
+            'model_initialized': model is not None
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
