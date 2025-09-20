@@ -131,13 +131,21 @@ def index():
 @app.route('/process', methods=['POST'])
 def process_document():
     try:
+        # Ensure we get JSON data
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+            
         data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+            
         document_text = data.get('document_text', '')
         language = data.get('language', 'English')
         
         if not document_text.strip():
             return jsonify({'error': 'Please provide document text'}), 400
         
+        print(f"📝 Processing document (Language: {language})")
         # Process with Gemini AI
         result = process_document_with_gemini(document_text, language)
         
@@ -148,12 +156,20 @@ def process_document():
         })
         
     except Exception as e:
+        print(f"❌ Process error: {str(e)}")
         return jsonify({'error': f'Error processing document: {str(e)}'}), 500
 
 @app.route('/ask_text', methods=['POST'])
 def ask_question_text():
     try:
+        # Ensure we get JSON data
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+            
         data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+            
         question = data.get('question', '')
         document_text = data.get('document_text', '')
         language = data.get('language', 'English')
@@ -161,6 +177,7 @@ def ask_question_text():
         if not question.strip() or not document_text.strip():
             return jsonify({'error': 'Please provide both question and document text'}), 400
         
+        print(f"❓ Answering question (Language: {language})")
         # Answer question with Gemini AI
         answer = answer_question_with_gemini(question, document_text, language)
         
@@ -171,6 +188,7 @@ def ask_question_text():
         })
         
     except Exception as e:
+        print(f"❌ Q&A error: {str(e)}")
         return jsonify({'error': f'Error answering question: {str(e)}'}), 500
 
 @app.route('/sample/<language>')
@@ -180,8 +198,15 @@ def get_sample_document(language):
         if language.lower() in SAMPLE_DOCUMENTS:
             return jsonify({
                 'success': True,
-                'text': SAMPLE_DOCUMENTS[language.lower()],
+                'document': SAMPLE_DOCUMENTS[language.lower()],  # Changed 'text' to 'document'
                 'language': language
+            })
+        elif language.lower() == 'land':
+            # Special case for land document - return English sample
+            return jsonify({
+                'success': True,
+                'document': SAMPLE_DOCUMENTS['english'],
+                'language': 'english'
             })
         else:
             return jsonify({'error': 'Language not supported'}), 400
@@ -221,6 +246,20 @@ def debug_info():
         })
     except Exception as e:
         return jsonify({'error': str(e)})
+
+# Global error handler to ensure JSON responses
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'error': 'Endpoint not found'}), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({'error': 'Internal server error'}), 500
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    print(f"❌ Unhandled error: {str(e)}")
+    return jsonify({'error': 'An unexpected error occurred'}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
