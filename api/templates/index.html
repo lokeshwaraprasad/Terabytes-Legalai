@@ -1412,9 +1412,9 @@
 
                 if (data.success) {
                     currentDocumentId = data.document_id;
-                    currentDocumentText = data.summary;
+                    currentDocumentText = data.result;
                     showDocumentInfo(data.filename, data.language);
-                    showResult(data.summary);
+                    showResult(data.result);
                     showQASection();
                 } else {
                     showError(data.error || 'Failed to upload file');
@@ -1433,7 +1433,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    document.getElementById('documentText').value = data.document;
+                    document.getElementById('documentText').value = data.text;
                     // Switch to text tab
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1459,7 +1459,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    document.getElementById('documentText').value = data.document;
+                    document.getElementById('documentText').value = data.text;
                     // Switch to text tab
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1508,7 +1508,7 @@
                 if (data.success) {
                     currentDocumentId = null; // No document ID for text input
                     currentDocumentText = documentText;
-                    showResult(data.summary);
+                    showResult(data.result);
                     hideQASection(); // Hide Q&A for text input
                 } else {
                     showError(data.error || 'Failed to process document');
