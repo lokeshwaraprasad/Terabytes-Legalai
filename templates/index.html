@@ -1409,18 +1409,27 @@
                     body: formData
                 });
 
+                console.log('Upload response status:', response.status);
+                console.log('Upload response headers:', response.headers);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
+                console.log('Upload response data:', data);
 
                 if (data.success) {
                     currentDocumentId = data.document_id;
-                    currentDocumentText = data.result; // Changed from data.summary to data.result
+                    currentDocumentText = data.result;
                     showDocumentInfo(data.filename, data.language);
-                    showResult(data.result); // Changed from data.summary to data.result
+                    showResult(data.result);
                     showQASection();
                 } else {
                     showError(data.error || 'Failed to upload file');
                 }
             } catch (error) {
+                console.error('Upload error:', error);
                 showError('Error uploading file: ' + error.message);
             } finally {
                 hideLoading();

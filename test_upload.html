@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Upload</title>
+</head>
+<body>
+    <h1>Test PDF Upload</h1>
+    <form id="uploadForm">
+        <input type="file" id="fileInput" accept=".pdf" required>
+        <select id="languageSelect">
+            <option value="english">English</option>
+            <option value="tamil">Tamil</option>
+        </select>
+        <button type="submit">Upload PDF</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const languageSelect = document.getElementById('languageSelect');
+            const resultDiv = document.getElementById('result');
+            
+            if (!fileInput.files[0]) {
+                resultDiv.innerHTML = '<p style="color: red;">Please select a file</p>';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('language', languageSelect.value);
+            
+            resultDiv.innerHTML = '<p>Uploading...</p>';
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <h3>Success!</h3>
+                        <p><strong>Filename:</strong> ${data.filename}</p>
+                        <p><strong>Language:</strong> ${data.language}</p>
+                        <p><strong>Document ID:</strong> ${data.document_id}</p>
+                        <h4>Analysis Result:</h4>
+                        <div style="border: 1px solid #ccc; padding: 10px; max-height: 400px; overflow-y: auto;">
+                            ${data.result.replace(/\n/g, '<br>')}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

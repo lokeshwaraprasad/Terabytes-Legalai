@@ -286,11 +286,15 @@ def upload_file():
         # Clean up temporary file
         try:
             os.remove(file_path)
-        except:
-            pass
+            print(f"Cleaned up temporary file: {file_path}")
+        except Exception as e:
+            print(f"Error cleaning up file {file_path}: {e}")
         
         if not document_text.strip():
+            print("No text extracted from file")
             return jsonify({'error': 'Could not extract text from file'}), 400
+        
+        print(f"Successfully extracted {len(document_text)} characters from file")
         
         # Store document for Q&A
         document_id = str(uuid.uuid4())
