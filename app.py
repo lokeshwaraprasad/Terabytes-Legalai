@@ -249,11 +249,16 @@ def process_document():
 @app.route('/upload', methods=['POST'])
 def upload_file():
     try:
+        print(f"Upload request received. Files: {list(request.files.keys())}")
+        print(f"Form data: {dict(request.form)}")
+        
         if 'file' not in request.files:
+            print("No file in request")
             return jsonify({'error': 'No file provided'}), 400
         
         file = request.files['file']
         if file.filename == '':
+            print("Empty filename")
             return jsonify({'error': 'No file selected'}), 400
         
         # Get language preference
@@ -261,11 +266,13 @@ def upload_file():
         
         # Save file temporarily
         filename = secure_filename(file.filename)
-        file_path = f"temp_{uuid.uuid4()}_{filename}"
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"temp_{uuid.uuid4()}_{filename}")
+        print(f"Saving file: {filename} to {file_path}")
         file.save(file_path)
         
         # Extract text based on file type
         file_extension = filename.lower().split('.')[-1]
+        print(f"Processing file with extension: {file_extension}")
         
         if file_extension == 'pdf':
             document_text = extract_text_from_pdf(file_path)

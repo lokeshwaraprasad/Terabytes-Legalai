@@ -261,7 +261,7 @@ def upload_file():
         
         # Save file temporarily
         filename = secure_filename(file.filename)
-        file_path = f"temp_{uuid.uuid4()}_{filename}"
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"temp_{uuid.uuid4()}_{filename}")
         file.save(file_path)
         
         # Extract text based on file type
