@@ -24,7 +24,7 @@ print(f"Using API Key: {GEMINI_API_KEY[:10]}...")
 
 try:
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-1.0-pro')
     print("✅ Gemini AI model initialized successfully")
 except Exception as e:
     print(f"❌ Error initializing Gemini AI: {e}")
