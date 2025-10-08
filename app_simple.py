@@ -19,12 +19,12 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-this-in-p
 DOCUMENTS_STORAGE = {}
 
 # Configure Gemini API
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyAxWFW3wCpdpbiis5djEONz_p5vaIY4LzQ')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyDKKQNaefREXR7y8vkTJnlP8FrjrAQg-f0')
 print(f"Using API Key: {GEMINI_API_KEY[:10]}...")
 
 try:
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-pro')
     print("✅ Gemini AI model initialized successfully")
 except Exception as e:
     print(f"❌ Error initializing Gemini AI: {e}")
